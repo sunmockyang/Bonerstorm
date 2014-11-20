@@ -137,13 +137,14 @@ class Player(GameObject):
 		self.health -= 1
 
 class Enemy(Player):
-	def __init__(self, screen, img, pos, player):
+	def __init__(self, screen, img, pos, player, speedMag):
 		super(Enemy, self).__init__(screen, img, pos)
 		self.player = player
 		self.health = 2
+		self.speedMag = speedMag
 
 	def update(self):
-		self.speed = self.player.pos.minusCopy(self.pos).unit().mult(2)
+		self.speed = self.player.pos.minusCopy(self.pos).unit().mult(self.speedMag)
 		f = self.speed.addCopy(self.pos)
 		self.face(f.x, f.y)
 		self.moveBy(self.speed)
@@ -158,6 +159,16 @@ class Enemy(Player):
   		self.rect = self.drawImg.get_rect()
 		self.rect.center = (self.pos.x, self.pos.y)
 		self.screen.blit(self.drawImg, self.rect)
+
+class Health():
+	def __init__(self, screen, img):
+		self.screen = screen
+		self.img = img
+
+	def draw(self, health):
+		for i in range(0, health):
+			self.screen.blit(self.img, pygame.Rect(700 - i*100, 0, 50, 50))
+		
 
 class Anim(GameObject):
 	def __init__(self, screen, imgs, pos, frameSkip, killAfter = True):

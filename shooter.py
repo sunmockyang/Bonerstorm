@@ -42,11 +42,13 @@ for i in range(1,6):
 
 splatters = []
 
-
+enemyNum = 1
 enemies = []
 enemySprite = pygame.image.load("img/red_player.png")
-for i in range(1,20):
-	enemies.append(Enemy(screen, enemySprite, Vector(random.randint(0, 800),random.randint(0, 600)), player))
+# for i in range(0,1):
+# 	enemies.append(Enemy(screen, enemySprite, Vector(random.randint(0, 800),random.randint(0, 600)), player, enemyNum//2))
+
+health = Health(screen, pygame.image.load("img/heart.png"))
 
 runGame = True
 while runGame:
@@ -106,15 +108,18 @@ while runGame:
 					enemy.damage()
 					splatters.append(Anim(screen, splatSmallSprites, bullet.pos, 4, True))
 					bullets.remove(bullet)
+					if enemy.health == 0:
+						player.health = player.health + 1 if player.health < 8 else 8
 
 	for enemy in enemies:
 		if player.isCollide(enemy):
 			enemy.health = 0
+			player.speed.add(enemy.speed.unit().mult(10))
 			player.damage()
 
 	if mousedown:
 		bullets.append(Bullet(screen, player.pos, player.facing.unit()))
-		# mousedown = player.pickup
+		mousedown = player.pickup
 
 	bg.draw()
 	obstacles.draw()
@@ -130,8 +135,16 @@ while runGame:
 			enemies.remove(enemy)
 		else:
 			enemy.draw()
+			
+	if len(enemies) == 0:
+		enemyNum += 1
+		for i in range(0,enemyNum):
+			enemies.append(Enemy(screen, enemySprite, Vector(random.randint(0, 800),random.randint(0, 600)), player, math.sqrt(enemyNum) + 1))
+
 
 	for bullet in bullets:
 		bullet.draw()
+
+	health.draw(player.health)
 
 	pygame.display.flip()
