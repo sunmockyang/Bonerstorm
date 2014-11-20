@@ -195,7 +195,6 @@ class Game(object):
 					self.bullets.append(Bullet(self.screen, self.player.pos, self.player.facing.unit()))
 				self.shootCounter += 1
 					
-				# self.mousedown = self.player.pickup
 			else:
 				self.shootCounter = 0
 
@@ -208,7 +207,7 @@ class Game(object):
 				anim.draw()
 
 			for enemy in self.enemies:
-				if enemy.health <= 0:
+				if enemy.health <= 0: # New wave of enemies
 					self.splatters.append(Anim(self.screen, self.splatBigSprites, enemy.pos, 4, True))
 					self.enemies.remove(enemy)
 				else:
@@ -217,7 +216,7 @@ class Game(object):
 			if len(self.enemies) == 0:
 				self.enemyNum += 1
 				for i in range(0,self.enemyNum):
-					self.enemies.append(Enemy(self.screen, self.enemySprite, self.EnemySpawn(), self.player, math.sqrt(self.enemyNum) + 1))
+					self.enemies.append(Enemy(self.screen, self.enemySprite, self.EnemySpawn(), self.player, math.sqrt(self.enemyNum * 2) + 1))
 
 
 			for bullet in self.bullets:

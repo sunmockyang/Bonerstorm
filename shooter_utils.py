@@ -118,7 +118,6 @@ class Player(GameObject):
   		self.rot = 0
 		self.radius = 10
 		self.speed = Vector(0,0)
-		self.pickup = False
 		self.health = 5
 
 	def input(self, inpt):
