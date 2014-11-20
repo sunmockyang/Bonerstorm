@@ -1,8 +1,10 @@
 from __future__ import division
 import pygame
 import math
+import random
 from shooter_utils import *
 
+random.seed()
 # initialize pygame
 pygame.init()
 
@@ -14,6 +16,18 @@ size = (width, height)
 screen = pygame.display.set_mode(size)
 screenRect = pygame.Rect(0,0,800,600)
 clock = pygame.time.Clock()
+shootFrames = 4
+
+def EnemySpawn():
+	side = random.randint(0,4)
+	if side == 0:
+		return Vector(-10, random.randint(0, 600))
+	elif side == 1:
+		return Vector(random.randint(0, 800), -10)
+	elif side == 2:
+		return Vector(810, random.randint(0, 600))
+	else:
+		return Vector(random.randint(0, 800), 610)
 
 keydown = {
 	pygame.K_UP: False,
@@ -45,8 +59,8 @@ splatters = []
 enemyNum = 1
 enemies = []
 enemySprite = pygame.image.load("img/red_player.png")
-# for i in range(0,1):
-# 	enemies.append(Enemy(screen, enemySprite, Vector(random.randint(0, 800),random.randint(0, 600)), player, enemyNum//2))
+
+shootCounter = shootFrames
 
 health = Health(screen, pygame.image.load("img/heart.png"))
 
@@ -118,8 +132,14 @@ while runGame:
 			player.damage()
 
 	if mousedown:
-		bullets.append(Bullet(screen, player.pos, player.facing.unit()))
-		mousedown = player.pickup
+		if shootCounter >= shootFrames:
+			shootCounter = 0
+			bullets.append(Bullet(screen, player.pos, player.facing.unit()))
+		shootCounter += 1
+			
+		# mousedown = player.pickup
+	else:
+		shootCounter = 0
 
 	bg.draw()
 	obstacles.draw()
@@ -139,7 +159,7 @@ while runGame:
 	if len(enemies) == 0:
 		enemyNum += 1
 		for i in range(0,enemyNum):
-			enemies.append(Enemy(screen, enemySprite, Vector(random.randint(0, 800),random.randint(0, 600)), player, math.sqrt(enemyNum) + 1))
+			enemies.append(Enemy(screen, enemySprite, EnemySpawn(), player, math.sqrt(enemyNum) + 1))
 
 
 	for bullet in bullets:

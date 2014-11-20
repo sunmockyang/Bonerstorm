@@ -114,7 +114,6 @@ class Player(GameObject):
   		self.img = img
   		self.pos = pos
   		self.moveTo(pos)
-  		self.ammo = 30
   		self.facing = Vector(0, 1)
   		self.rot = 0
 		self.radius = 10
