@@ -13,9 +13,19 @@ class Vector(object):
 	def __str__(self):
 		return "[x: %f, y: %f]" % (self.x, self.y)
 
+	def add(self, vec):
+		self.x += vec.x
+		self.y += vec.y
+
+	def addCopy(self, vec):
+		return Vector(self.x + vec.x, self.y + vec.y)
+
 	def mult(self, a):
 		self.x *= a
 		self.y *= a
+
+	def multCopy(self, a):
+		return Vector(self.x * a, self.y * a)
 
 	def isZero(self):
 		return (self.x == 0) and (self.y == 0)
@@ -68,18 +78,19 @@ class GameObject(object):
 
 class Bullet(GameObject):
 	def __init__(self, screen, pos, speed):
-		super(Bullet, self).__init__(screen, None, Vector(pos.x, pos.y))
+		super(Bullet, self).__init__(screen, None, pos.addCopy(speed.multCopy(10)))
 		self.speed = speed
 		self.speed.mult(5)
 		self.speed.randomize(0.5)
 		self.radius = 3
-		self.color = (random.randint(230,255), random.randint(230,240), 0)
+		self.color = (random.randint(230,255), random.randint(220,230), 50)
 
 	def update(self):
 		self.moveBy(self.speed)
 
 	def draw(self):
-		pygame.draw.circle(self.screen, self.color, self.pos.getRaw(), self.radius)
+		pygame.draw.line(self.screen, self.color, self.speed.multCopy(-2).addCopy(self.pos).getRaw(), self.pos.getRaw(), self.radius)
+		# pygame.draw.circle(self.screen, self.color, self.pos.getRaw(), self.radius)
 		
 
 class Player(GameObject):
@@ -94,6 +105,8 @@ class Player(GameObject):
   		self.rot = 0
 		self.radius = 10
 		self.speed = Vector(0,0)
+		self.pickup = False
+		self.health = 5
 
 	def input(self, inpt):
 		self.speed.x += inpt[0]

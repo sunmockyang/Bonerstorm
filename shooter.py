@@ -79,7 +79,7 @@ while runGame:
 
 	if mousedown:
 		bullets.append(Bullet(screen, player.pos, player.facing.unit()))
-		mousedown = False
+		mousedown = player.pickup
 
 	bg.draw()
 	obstacles.draw()
