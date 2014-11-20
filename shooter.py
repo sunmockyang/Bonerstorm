@@ -15,14 +15,12 @@ height = 600
 size = (width, height)
 screen = pygame.display.set_mode(size)
 screenRect = pygame.Rect(0,0,800,600)
-clock = pygame.time.Clock()
 fps = 29
 
 game = Game(screen)
 
 runGame = True
 while runGame:
-	clock.tick(fps)
-	game.mainGameLoop()
+	game.startScreen()
 
-	pygame.display.flip()
+	game.mainGameLoop()
