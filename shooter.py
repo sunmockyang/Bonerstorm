@@ -12,6 +12,7 @@ height = 600
 fps = 60
 size = (width, height)
 screen = pygame.display.set_mode(size)
+screenRect = pygame.Rect(0,0,800,600)
 clock = pygame.time.Clock()
 
 keydown = {
@@ -24,10 +25,12 @@ keydown = {
 	pygame.K_a: False,
 	pygame.K_d: False,
 }
+mousedown = False
 
 bg = GameObject(screen, pygame.image.load("img/bg.png"), Vector(0,0))
 player = Player(screen, pygame.image.load("img/blue_player.png"), Vector(400,300))
 obstacles = Obstacles(screen)
+bullets = []
 
 runGame = True
 while runGame:
@@ -44,6 +47,10 @@ while runGame:
 				exit()
 		elif event.type == pygame.KEYUP:
 			keydown[event.key] = False
+		elif event.type == pygame.MOUSEBUTTONDOWN:
+			mousedown = True
+		elif event.type == pygame.MOUSEBUTTONUP:
+			mousedown = False
 
 	speed = [0,0]
 	if keydown[pygame.K_UP] == True or keydown[pygame.K_w] == True:
@@ -65,9 +72,21 @@ while runGame:
 	mousePos = pygame.mouse.get_pos()
 	player.face(mousePos[0], mousePos[1])
 
+	for bullet in bullets:
+		bullet.update()
+		if not screenRect.collidepoint(bullet.pos.getRaw()) or obstacles.isCollide(bullet):
+			bullets.remove(bullet)
+
+	if mousedown:
+		bullets.append(Bullet(screen, player.pos, player.facing.unit()))
+		mousedown = False
+
 	bg.draw()
 	obstacles.draw()
 
 	player.draw()
+
+	for bullet in bullets:
+		bullet.draw()
 
 	pygame.display.flip()

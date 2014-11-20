@@ -9,6 +9,7 @@ class Vector(object):
 		super(Vector, self).__init__()
 		self.x = x
 		self.y = y
+
 	def __str__(self):
 		return "[x: %f, y: %f]" % (self.x, self.y)
 
@@ -19,6 +20,20 @@ class Vector(object):
 	def isZero(self):
 		return (self.x == 0) and (self.y == 0)
 
+	def getRaw(self):
+		return (int(self.x), int(self.y))
+
+	def magnitude(self):
+		return math.sqrt(math.pow(self.x, 2) + math.pow(self.y, 2))
+
+	def unit(self):
+		m = self.magnitude()
+		return Vector(self.x/m, self.y/m)
+
+	def randomize(self, amount):
+		self.x += random.uniform(-amount, amount);
+		self.y += random.uniform(-amount, amount);
+
 class GameObject(object):
 	def __init__(self, screen, img, pos):
 		super(GameObject, self).__init__()
@@ -27,8 +42,11 @@ class GameObject(object):
 		self.pos = pos
 		self.rot = 0
 		
-		r = self.img.get_rect()
-		self.rect = pygame.Rect(pos.x, pos.y, r.width, r.height)
+		if img == None:
+			self.rect = pygame.Rect(0,0,0,0)
+		else:
+			r = self.img.get_rect()
+			self.rect = pygame.Rect(pos.x, pos.y, r.width, r.height)
 
 	def moveTo(self, pos):
 		self.pos = pos
@@ -47,6 +65,22 @@ class GameObject(object):
 	def draw(self):
 		self.screen.blit(self.img, self.rect)
 
+
+class Bullet(GameObject):
+	def __init__(self, screen, pos, speed):
+		super(Bullet, self).__init__(screen, None, Vector(pos.x, pos.y))
+		self.speed = speed
+		self.speed.mult(5)
+		self.speed.randomize(0.5)
+		self.radius = 3
+		self.color = (random.randint(230,255), random.randint(230,240), 0)
+
+	def update(self):
+		self.moveBy(self.speed)
+
+	def draw(self):
+		pygame.draw.circle(self.screen, self.color, self.pos.getRaw(), self.radius)
+		
 
 class Player(GameObject):
   	def __init__(self, screen, img, pos):
@@ -101,9 +135,9 @@ class Wall(object):
 		dy = max(abs(py - self.rect.top) - self.rect.height / 2, 0);
 		return dx * dx + dy * dy;
 
-	def isCollide(self, player):
-		temp = pygame.Rect(self.rect.left - player.radius, self.rect.top - player.radius, self.rect.width + 2*player.radius, self.rect.height + 2*player.radius)
-		return temp.collidepoint(player.pos.x + player.speed.x, player.pos.y + player.speed.y)
+	def isCollide(self, gameObject):
+		temp = pygame.Rect(self.rect.left - gameObject.radius, self.rect.top - gameObject.radius, self.rect.width + 2*gameObject.radius, self.rect.height + 2*gameObject.radius)
+		return temp.collidepoint(gameObject.pos.x + gameObject.speed.x, gameObject.pos.y + gameObject.speed.y)
 
 
 class Obstacles(object):
@@ -123,9 +157,9 @@ class Obstacles(object):
 		for wall in self.walls:
 			wall.draw()
 
-	def isCollide(self, player):
+	def isCollide(self, gameObject):
 		for wall in self.walls:
-			if wall.isCollide(player):
+			if wall.isCollide(gameObject):
 				return True
 
 		return False
