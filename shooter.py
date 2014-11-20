@@ -19,8 +19,9 @@ fps = 29
 
 game = Game(screen)
 
+game.startScreen()
 runGame = True
 while runGame:
-	game.startScreen()
-
 	game.mainGameLoop()
+
+	runGame = game.endScreen()

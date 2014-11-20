@@ -49,12 +49,25 @@ class Game(object):
 
 	def Reset(self):
 		self.player.pos = Vector(400,300)
+		self.player.health = 5
+		self.player.speed = Vector(0,0)
 		self.obstacles = Obstacles(self.screen)
 		self.bullets = []
 		self.splatters = []
-		self.enemyNum = 1
+		self.enemyNum = 0
 		self.enemies = []
 		self.shootCounter = self.shootFrames
+		self.keydown = {
+			pygame.K_UP: False,
+			pygame.K_DOWN: False,
+			pygame.K_LEFT: False,
+			pygame.K_RIGHT: False,
+			pygame.K_w: False,
+			pygame.K_s: False,
+			pygame.K_a: False,
+			pygame.K_d: False,
+		}
+		self.mousedown = False
 
 	def EnemySpawn(self):
 		side = random.randint(0,4)
@@ -68,6 +81,8 @@ class Game(object):
 			return Vector(random.randint(0, 800), 610)
 
 	def startScreen(self):
+		startBG = GameObject(self.screen, pygame.image.load("img/start_bg.png"), Vector(400,300))
+
 		runGame = True
 		while runGame:
 			self.clock.tick(self.fps)
@@ -80,7 +95,27 @@ class Game(object):
 				elif event.type == pygame.MOUSEBUTTONDOWN:
 					return True
 
-			
+			startBG.draw()
+
+			pygame.display.flip()
+
+	def endScreen(self):
+		bg = GameObject(self.screen, pygame.image.load("img/lose_bg.png"), Vector(400,300))
+
+		runGame = True
+		while runGame:
+			self.clock.tick(self.fps)
+
+			for event in pygame.event.get():
+				if event.type == pygame.QUIT:
+					exit()
+				elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
+					exit()
+				elif event.type == pygame.KEYDOWN and event.key == pygame.K_RETURN:
+					self.Reset()
+					return True
+
+			bg.draw()
 
 			pygame.display.flip()
 
@@ -150,6 +185,9 @@ class Game(object):
 					enemy.health = 0
 					self.player.speed.add(enemy.speed.unit().mult(10))
 					self.player.damage()
+
+			if self.player.health <= 0:
+				return False
 
 			if self.mousedown:
 				if self.shootCounter >= self.shootFrames:
