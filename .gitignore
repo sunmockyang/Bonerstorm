@@ -1,3 +1,4 @@
+/*.pyc
 /_git
 /_gitattributes
 /_gitignore
@@ -31,7 +32,8 @@ $RECYCLE.BIN/
 .LSOverride
 
 # Icon must end with two \r
-Icon
+Icon
+
 
 # Thumbnails
 ._*
