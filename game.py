@@ -177,7 +177,8 @@ class Game(object):
 							enemy.damage()
 							self.splatters.append(Anim(self.screen, self.splatSmallSprites, bullet.pos, 4, True))
 							self.bullets.remove(bullet)
-							if enemy.health == 0:
+							if enemy.health == 0: # Enemy Dies
+								enemy.sound.play()
 								self.player.health = self.player.health + 1 if self.player.health < 8 else 8
 
 			for enemy in self.enemies:
@@ -189,12 +190,15 @@ class Game(object):
 			if self.player.health <= 0:
 				return False
 
+			# Shoot
 			if self.mousedown:
-				if self.shootCounter >= self.shootFrames:
+				if self.shootCounter >= self.shootFrames or self.shootCounter == 0:
+					sound = pygame.mixer.Sound(self.player.gunsound)
+					sound.set_volume(0.5)
+					sound.play()
 					self.shootCounter = 0
 					self.bullets.append(Bullet(self.screen, self.player.pos, self.player.facing.unit()))
 				self.shootCounter += 1
-					
 			else:
 				self.shootCounter = 0
 

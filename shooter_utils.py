@@ -95,8 +95,8 @@ class Bullet(GameObject):
 	def __init__(self, screen, pos, speed):
 		super(Bullet, self).__init__(screen, None, pos.addCopy(speed.multCopy(10)))
 		self.speed = speed
-		self.speed.mult(10)
-		self.speed.randomize(0.5)
+		self.speed.mult(15)
+		self.speed.randomize(0.7)
 		self.radius = 2
 		self.color = (random.randint(230,255), random.randint(220,230), 50)
 
@@ -119,6 +119,7 @@ class Player(GameObject):
 		self.radius = 10
 		self.speed = Vector(0,0)
 		self.health = 5
+		self.gunsound = "sound/shot.wav"
 
 	def input(self, inpt):
 		self.speed.x += inpt[0] * 2
@@ -126,17 +127,22 @@ class Player(GameObject):
 
 	def update(self):
 		self.moveBy(self.speed)
-		self.speed.mult(0.75)
+		self.speed.mult(0.70)
 
 	def stop(self):
 		self.speed = Vector(0,0)
 
 	def damage(self):
 		self.health -= 1
+		if self.health == 0:
+			pygame.mixer.Sound('sound/player/die.wav').play()
+		else:
+			pygame.mixer.Sound('sound/player/pain%d.wav' % random.randint(1,8)).play()
 
 class Enemy(Player):
 	def __init__(self, screen, img, pos, player, speedMag):
 		super(Enemy, self).__init__(screen, img, pos)
+		self.sound = pygame.mixer.Sound('sound/monster/monster-%d.wav.ogg' % random.randint(9,18))
 		self.player = player
 		self.health = 2
 		self.speedMag = speedMag
@@ -157,6 +163,9 @@ class Enemy(Player):
   		self.rect = self.drawImg.get_rect()
 		self.rect.center = (self.pos.x, self.pos.y)
 		self.screen.blit(self.drawImg, self.rect)
+
+	def damage(self):
+		self.health -= 1
 
 class Health():
 	def __init__(self, screen, img):
